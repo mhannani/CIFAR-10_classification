@@ -48,12 +48,19 @@ class CifarModel:
         :return: None
         """
 
-        self.lr = lr
+        self.learning_rate = lr
 
         # The optimized
         optimizer = Adam(learning_rate=lr)
         self.model.compile(loss='categorical_crossentropy',
                            optimizer=optimizer, metrics=['accuracy'])
+
+    def train(self, x_train, y_train, epochs=10, batch_size=32, shuffle=True):
+        """
+        Train the model with training set.
+        :return: None
+        """
+        self.model.fit(x_train, y_train, batch_size, epochs, shuffle)
 
     def _plot_model(self, location):
         """
@@ -63,6 +70,18 @@ class CifarModel:
         :return: None
         """
         plot_model(self.model, to_file=os.path.join('models_info', location, 'viz/model.png'))
+
+    def evaluate(self, x, y):
+        """
+        Evaluate the model on unseen data.
+        :param x: array_like
+            The test data
+        :param y: array_like
+            array one hot encoded vector.
+        :return: None
+        """
+
+        self.model.evaluate(x, y)
 
     def save(self, location):
         """
