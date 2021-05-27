@@ -2,8 +2,11 @@ from tensorflow.keras.layers import Input, Flatten, Dense
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
+from matplotlib import pyplot as plt
 import os
+import numpy as np
 import pickle
+from utils import split_nbr
 
 
 class CifarModel:
@@ -107,3 +110,57 @@ class CifarModel:
 
         # Plot the model
         self._plot_model(location)
+
+    def plot_predictions(self, x, y, nb_imgs=10, random_state=True):
+        """
+        plot the predicted label with its true-ground.
+        :param x: array_like
+            The test set.
+        :param y: array_like
+            The ground truth labels.
+        :param nb_imgs: integer
+            Number of images to plot
+        :param random_state: boolean
+            True for reproducible output.
+        :return: None
+        """
+        # colors for predicted labels.
+        colors = {
+            'true': 'g',
+            'false': 'r'
+        }
+        # labels to class name
+        classes = np.array(['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'])
+
+        # Make predictions
+        y_preds = self.model.predict(x, nb_imgs)
+
+        actual_classes = classes[np.argmax(y, axis=-1)]
+        predicted_classes = classes[np.argmax(y_preds, axis=-1)]
+
+        # Create a figure
+        fig = plt.figure(figsize=(15, 5))
+
+        # adjust the space between subplots
+        fig.subplots_adjust(hspace=0.5, wspace=0.5)
+
+        # Split the number of images provided
+        n_rows, n_cols, _ = split_nbr(nb_imgs)
+        for i in range(nb_imgs):
+            ax = fig.add_subplot(n_rows, n_cols, i + 1)
+            act_cls = actual_classes[i]
+            pred_cls = predicted_classes[i]
+
+            # check whether the predicted label is equal to actual one.
+            if act_cls == pred_cls:
+                color = colors['true']
+            else:
+                color = colors['false']
+
+            # label each sample
+            ax.text(0, -0.25, 'actual = ' + str(act_cls), ha='left', transform=ax.transAxes)
+            ax.text(0, -0.35, 'predicted = ' + str(pred_cls), ha='left', transform=ax.transAxes, color=color)
+            ax.imshow(x[i])
+
+        return predicted_classes
+
