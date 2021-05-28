@@ -200,4 +200,3 @@ class CifarModel:
 
         # load saved weights
         self.model.load_weights(os.path.join('models_info', location))
-
