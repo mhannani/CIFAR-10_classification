@@ -191,5 +191,13 @@ class CifarModel:
             ax.text(0, -0.35, 'predicted = ' + str(pred_cls), ha='left', transform=ax.transAxes, color=color)
             ax.imshow(x[i])
 
-        return predicted_classes
+    def load_weights(self, location):
+        """
+        Load the weights
+        :param location: location where the weights parameters are stored.
+        :return: None
+        """
+
+        # load saved weights
+        self.model.load_weights(os.path.join('models_info', location))
 
