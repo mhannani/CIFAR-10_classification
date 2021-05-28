@@ -159,7 +159,8 @@ class CifarModel:
             'false': 'r'
         }
         # labels to class name
-        classes = np.array(['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'])
+        classes = np.array(['airplane', 'automobile', 'bird', 'cat', 'deer',
+                            'dog', 'frog', 'horse', 'ship', 'truck'])
 
         # Make predictions
         y_preds = self.model.predict(x, nb_imgs)
