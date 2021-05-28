@@ -1,4 +1,5 @@
 from tensorflow.keras.layers import Input, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, BatchNormalization, Dropout, LeakyReLU
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
@@ -13,14 +14,25 @@ class CifarModel:
     """
     The Cifar helper class to train the model.
     """
-    def __init__(self, input_shape, dense_layers, z_shape):
+    def __init__(self,
+                 input_shape,
+                 conv_filters,
+                 conv_kernel_size,
+                 conv_strides,
+                 z_shape,
+                 use_batch_norm=True,
+                 use_dropout=True):
         """
         The class constructor.
         """
         self.name = 'model'
         self.input_shape = input_shape
-        self.dense_layers = dense_layers
-        self.n_dense_layer = len(dense_layers)
+        self.conv_filters = conv_filters
+        self.conv_kernel_size = conv_kernel_size
+        self.conv_strides = conv_strides
+        self.n_conv_layer = len(conv_filters)
+        self.use_batch_norm = use_batch_norm
+        self.use_dropout = use_dropout
         self.z_shape = z_shape
 
         # build the architecture of the model
@@ -33,10 +45,23 @@ class CifarModel:
         """
 
         model_input = Input(shape=self.input_shape, name='model_input')
-        x = Flatten(name='flatten_layer')(model_input)
+        x = model_input
 
-        for i in range(self.n_dense_layer):
-            x = Dense(units=i, activation='relu', name=f'{i}_dense_layer')(x)
+        for i in range(self.n_conv_layer):
+            x = Conv2D(filters=self.conv_filters[i],
+                       kernel_size=self.conv_kernel_size[i],
+                       strides=self.conv_strides[i], padding='same')(x)
+
+            if self.use_batch_norm:
+                x = BatchNormalization()(x)
+
+            x = LeakyReLU()(x)
+
+        x = Flatten()(x)
+        x = Dense(128)(x)
+        x = BatchNormalization()(x)
+        x = LeakyReLU()(x)
+        x = Dropout(rate=0.5)(x)
 
         model_output = Dense(units=self.z_shape, activation='softmax', name='output')(x)
 
@@ -58,7 +83,7 @@ class CifarModel:
         self.model.compile(loss='categorical_crossentropy',
                            optimizer=optimizer, metrics=['accuracy'])
 
-    def train(self, x_train, y_train, epochs=10, batch_size=32, shuffle=True):
+    def train(self, x_train, y_train, epochs=10, batch_size=64, shuffle=True):
         """
         Train the model with training set.
         :return: None
@@ -104,8 +129,12 @@ class CifarModel:
         with open(os.path.join('models_info', location, 'params.pkl'), 'wb') as f:
             pickle.dump([
                 self.input_shape,
-                self.n_dense_layer,
-                self.z_shape
+                self.conv_filters,
+                self.conv_kernel_size,
+                self.conv_strides,
+                self.z_shape,
+                self.use_batch_norm,
+                self.use_dropout
             ], f)
 
         # Plot the model
