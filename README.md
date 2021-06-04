@@ -1,6 +1,6 @@
 # CIFAR Image classification 
 
-In this repository, we aim to provide a deep learning workflow to classify images in the CIFAR-10 dataset using Keras. 
+In this branch, we aim to provide a deep learning workflow to classify images in the CIFAR-10 dataset using Keras. 
 
 ## Setup
 ``pip install -r requirement.txt``
