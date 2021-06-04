@@ -10,3 +10,6 @@ Using Vanilla Tensorflow to build the classifier. check <a href='https://github.
 
 * #### PyTorch implementation [Working on it]
 Using PyTorch to build the classifier. check <a href='https://github.com/mhannani/CIFAR-10_classification/tree/PyTorch'>here</a>
+
+* #### The UI using Dash Plotly [Working on it]
+Web application using Dash plotly providing the pretrained model in production. check <a href='https://github.com/mhannani/CIFAR-10_classification/tree/UI'>here</a>
